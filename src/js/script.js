@@ -16,6 +16,15 @@
     favorite: 'favorite',
     hidden: 'hidden',
   };
+
+  const settings = {
+    ratings: {
+      rating1: 'linear-gradient(to bottom,  #fefcea 0%, #f1da36 100%)', // Rating < 6
+      rating2: 'linear-gradient(to bottom, #b4df5b 0%,#b4df5b 100%)', // Rating > 6 && <= 8
+      rating3: 'linear-gradient(to bottom, #299a0b 0%, #299a0b 100%)', // Rating > 8 && <= 9
+      rating4: 'linear-gradient(to bottom, #ff0084 0%,#ff0084 100%)', // Rating > 9
+    },
+  };
   
   // reference to template and list
   const templates = {
@@ -36,6 +45,7 @@
       thisBooks.getElement();
       thisBooks.render();
       thisBooks.initActions();
+      thisBooks.determineRatingBgc();
     }
   
     getElement() {
@@ -50,9 +60,22 @@
       thisBooks.booksData = dataSource.books;
 
       for (let book of dataSource.books) {
+
+        const ratingBgc = thisBooks.determineRatingBgc(book.rating);
+        const ratingWidth = book.rating * 10;
   
         /* generating HTML code based on a template and data about a specific book. */
-        const generatedHTML = templates.templateBooks(book);
+        const generatedHTML = templates.templateBooks({
+          id: book.id,
+          name: book.name,
+          price: book.price,
+          rating: book.rating,
+          image: book.image,
+          details: book.details.adults,
+          nonFiction: book.details.nonFiction,
+          ratingBgc: ratingBgc,
+          ratingWidth: ratingWidth,
+        });
         /* creating a DOM element */
         const element = utils.createDOMFromHTML(generatedHTML);
         // creating a DOM element from HTML code
@@ -124,6 +147,21 @@
           book.classList.remove(classNames.hidden);
         }
       }
+    }
+
+    determineRatingBgc(rating) {
+      let background = '';
+  
+      if (rating < 6) {
+        background = settings.ratings.rating1;
+      } else if (rating > 6 && rating <= 8) {
+        background = settings.ratings.rating2;
+      } else if (rating > 8 && rating <= 9) {
+        background = settings.ratings.rating3;
+      } else if (rating > 9) {
+        background = settings.ratings.rating4;
+      }
+      return background;
     }
 
   }
